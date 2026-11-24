@@ -40,3 +40,9 @@ Construir un flujo de análisis y clasificación computacional de canciones por 
 [Hito 3]     Extracción masiva de características sobre las 1.000 pistas (CSV derivado)
       ↓
 [Hito 3]     Entrenamiento y evaluación de clasificadores base (ej. Random Forest / SVM) con matriz de confusión
+```
+
+## Reproducibilidad
+1. Crear y activar el entorno virtual (`conda activate acus220_2026`) con `librosa`, `numpy`, `pandas`, `matplotlib` y `soundfile`.
+2. Descargar el dataset GTZAN desde Kaggle y ubicar la carpeta de audios en `data/gtzan/` (con las 10 subcarpetas de géneros).
+3. Ejecutar los notebooks en orden numérico dentro de `notebooks/`.
