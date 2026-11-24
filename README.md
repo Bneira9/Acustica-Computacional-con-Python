@@ -3,56 +3,40 @@
 ## Integrante
 - Benjamín Neira Provoste
 
-## Idea del proyecto
-Construir un programa que analice canciones y permita identificar a qué género musical pertenecen mediante la extracción de sus características sonoras.
+## Asignatura
+- **ACUS220 — Acústica Computacional con Python** (Universidad Austral de Chile)
 
-## Pregunta principal
-¿Qué características acústicas y visuales (espectrogramas) permiten describir y diferenciar mejor los distintos géneros musicales?.
+## Idea del proyecto y pregunta principal
+Construir un flujo de análisis y clasificación computacional de canciones por género musical mediante representaciones tiempo–frecuencia y extracción de características acústicas.
 
-## Motivación
-El interés principal es aplicar herramientas computacionales a un problema cotidiano como la música, aprendiendo en el proceso sobre procesamiento de señales de audio y conceptos básicos de aprendizaje de máquina.
+**Pregunta principal:** ¿Qué características acústicas y representaciones (espectrogramas log-Mel, descriptores espectrales y MFCC) permiten describir y diferenciar mejor los distintos géneros musicales?
 
-## Datos
-- Fuente: Dataset público (posiblemente GTZAN o algún otro, todavía por confirmar).
-- Tipo de datos: Grabaciones musicales.
-- Formato: Archivos de audio (esperamos `.wav` o `.mp3`).
-- Cantidad aproximada: Por definir según el dataset seleccionado. De momento el mínimo de 1 canción para pruebas.
-- Etiquetas disponibles: Sí, géneros predefinidos (rock, jazz, clásica, etc.).
-- Aspectos que todavía debemos investigar: La efectiva búsqueda de Datasets confiables y de buena calidad, y cómo descargar y cargar estos datos eficientemente en Python.
+## Datos (Dataset GTZAN)
+- **Fuente:** Dataset público [GTZAN (Kaggle)](https://www.kaggle.com/datasets/andradaolteanu/gtzan-dataset-music-genre-classification).
+- **Estructura auditada:** 1.000 pistas `.wav` (~30 s cada una, frecuencia de muestreo original de 22.050 Hz), perfectamente balanceadas en **10 géneros** (100 archivos por clase: *blues, classical, country, disco, hiphop, jazz, metal, pop, reggae, rock*).
+- **Gestión en repositorio:** Los audios originales se mantienen localmente en `data/gtzan/` y están excluidos del control de versiones mediante `.gitignore` por restricciones de tamaño.
 
-## Alcance inicial
-**Objetivo inicial:**
-Obtener el dataset de canciones, comprender su estructura, generar espectrogramas para comparar visualmente los géneros y extraer características acústicas clave usando `librosa` o algún similar.
+## Evolución y notebooks desarrollados
+1. `notebooks/01_espectrograma.ipynb`: Prueba inicial de entorno (`acus220_2026`) y primer espectrograma (Hito 1).
+2. `notebooks/02_auditoria_datos.ipynb`: Auditoría automatizada del dataset GTZAN con `pathlib` y `pandas`, confirmando balance de clases.
+3. `notebooks/03_exploracion_visual.ipynb`: Pipeline modular de inspección visual comparando forma de onda y espectrogramas log-Mel (`n_fft=2048`, `hop_length=512`, `n_mels=128`) entre géneros contrastantes (*Classical* vs. *Metal*).
+4. `notebooks/04_extraccion_caracteristicas.ipynb`: Extracción de características escalares y espectrales (RMS, ZCR, centroide espectral, ancho de banda y MFCC) en 4 géneros contrastantes, más evaluación crítica de `librosa.pyin` ($F_0$) en música polifónica.
 
-**Si existe tiempo:**
-Implementar un modelo básico de clasificación y evaluar su desempeño para predecir géneros nuevos.
+## Decisiones metodológicas clave (Hito 2)
+- **Parámetros STFT/Mel adaptados a música:** Se aumentó la resolución respecto a señales de habla (`n_fft=2048`, `hop_length=512`, `n_mels=128`) para adecuarse a $f_s = 22.050\text{ Hz}$ y capturar mejor la riqueza armónica.
+- **Descarte de $F_0$ (`librosa.pyin`) como descriptor principal:** Las pruebas demostraron que, al tratarse de audio polifónico (múltiples instrumentos simultáneos y distorsión), la estimación de frecuencia fundamental se fragmenta o salta entre fuentes sonoras, por lo que no resulta confiable para clasificar géneros.
+- **Priorización de MFCC y descriptores espectrales:** Las métricas de energía (RMS), brillo (centroide/ZCR) y timbre (MFCC) muestran separación clara entre géneros acústicos y densos, aunque géneros cercanos (*Classical* vs. *Jazz*) requieren combinar múltiples características.
 
-## Pipeline provisional
-
-```
-búsqueda y descarga de audios
-↓
-auditoría de los datos
-↓
-generación de espectrogramas
-↓
-extracción de características acústicas
-↓
-exploración visual de diferencias
-↓
-¿clasificación automática?
-```
-
-## Posibles dificultades
-- Capacidad computacional para procesar cientos de archivos de audio.
-- Desconocimiento inicial de metodologías de clasificación.
-- Tiempo disponible para entrenar modelos complejos.
-
-## Estado actual
-Hemos configurado el entorno aislado (`acus220_2026`), estructurado el repositorio en GitHub y validado el funcionamiento de nuestras herramientas mediante la generación exitosa de un primer espectrograma de prueba utilizando `librosa` en Jupyter Notebook.
-
-## Próximos pasos
-1. **Adquisición de datos:** Seleccionar y descargar el dataset principal de música etiquetado por géneros (por ejemplo, el dataset GTZAN).
-2. **Procesamiento en lote:** Crear un notebook para cargar y auditar múltiples archivos de audio de distintos géneros de manera estructurada.
-3. **Extracción de características:** Extraer métricas acústicas y espectrogramas para comparar visual y matemáticamente las diferencias entre géneros musicales.
-4. **Decisiones metodológicas:** Investigar y definir el enfoque inicial para la clasificación de estos datos.
+## Pipeline actualizado
+```text
+[Completado] Adquisición y aislamiento del dataset GTZAN (.gitignore)
+      ↓
+[Completado] Auditoría de clases y metadatos (pandas / pathlib)
+      ↓
+[Completado] Exploración visual comparativa (forma de onda y log-Mel)
+      ↓
+[Completado] Extracción de características (RMS, ZCR, espectrales, MFCC) y descarte justificado de F0
+      ↓
+[Hito 3]     Extracción masiva de características sobre las 1.000 pistas (CSV derivado)
+      ↓
+[Hito 3]     Entrenamiento y evaluación de clasificadores base (ej. Random Forest / SVM) con matriz de confusión
